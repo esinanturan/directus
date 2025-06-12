@@ -389,7 +389,7 @@ class FlowManager {
 		}
 
 		if (
-			flow.trigger === 'manual' &&
+			(flow.trigger === 'manual' || flow.trigger === 'webhook') &&
 			flow.options['async'] !== true &&
 			flow.options['error_on_reject'] === true &&
 			lastOperationStatus === 'reject'
@@ -430,9 +430,11 @@ class FlowManager {
 
 		const handler = this.operations.get(operation.type)!;
 
-		const options = applyOptionsData(operation.options, keyedData);
+		let options = operation.options;
 
 		try {
+			options = applyOptionsData(options, keyedData);
+
 			let result = await handler(options, {
 				services,
 				env: useEnv(),
